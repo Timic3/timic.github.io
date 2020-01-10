@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mini Golf</title>
+</head>
+<body>
+  <div class="screen">
+    <canvas id="game">WebGL not supported in this browser. Sorry!</canvas>
+    <div id="overlay">
+        <div id="screen__loading">
+            <h1>Loading the universe...</h1>
+            <h2 id="flow__loading"></h2>
+        </div>
+        <div id="screen__menu" hidden>
+            <div class="selection">
+                <h1>Mini Golf</h1>
+                <h2 id="menu__start">Start Game</h2>
+                <h2 id="menu__options">Options</h2>
+                <h2 id="menu__exit">Exit</h2>
+            </div>
+            <!--<div class="party">
+                <h3>Party: <span id="queueType">Ranked</span><span id="queueSlots">2 / 8</span></h3>
+                <p></p>
+                <p></p>
+            </div>-->
+            <div class="credits">
+                <h1>Made by <a href="https://github.com/Timic3" target="_blank">Timotej M.</a> and <a href="https://github.com/tilenpirih" target="_blank">Tilen P.</a></h1>
+                <h1>Check out <a href="https://github.com/Timic3/minigolf" target="_blank">Mini Golf GitHub repository</a></h1>
+            </div>
+        </div>
+        <div id="screen__game" hidden>
+            <div id="force">
+                <div id="force__value"></div>
+            </div>
+        </div>
+        <div class="corner">
+            <h3>Mini Golf Alpha</h3>
+            <p id="flow__hole"></p>
+            <p id="flow__strokes"></p>
+            <p id="flow__all-strokes"></p>
+            <p id="flow__personal-best"></p>
+        </div>
+    </div>
+  </div>
+  <div id="dialog" hidden>
+      <h1 id="dialog__text"></h1>
+      <h2 id="dialog__yes_no" hidden><span id="dialog__yes">Yes</span><span id="dialog__no">No</span></h2>
+      <h2 id="dialog__ok" hidden><span id="dialog__okay">Okay</span></h2>
+  </div>
+<script type="text/javascript" src="js/vendors~main.chunk.js"></script><script type="text/javascript" src="js/main.bundle.js"></script></body>
+</html>
