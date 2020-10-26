@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>RG: Domača naloga 2</title>
+    <style>
+        * {
+            font-family: sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #board {
+            width: 100%;
+            height: 100%;
+        }
+
+        #controls {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            font-size: 1.2em;
+        }
+
+        #selection {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            font-size: 1.2em;
+        }
+
+        #splines {
+            width: 90px;
+        }
+
+        button, input {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #text {
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .instructions {
+            font-size: 1rem;
+            display: block;
+            width: 300px;
+        }
+
+        #hide {
+            display: block;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="board"></canvas>
+    <div id="controls">
+        <!--<span class="title">RG: Domača naloga 2</span>
+        <div id="text">
+            <span class="instructions">
+                Za risanje krivulj povleci in spusti (drag and drop). Na prvem mestu se bo prikazala interpolirana točka, na drugem pa aproksimirana.
+                Program dovoli predogled zlepka (preview), da takoj vidimo kakšna bo. Za dodajanje nove krivulje pritisni <b>+</b>, za brisanje trenutno izbrane krivulje pa <b>-</b>.
+                Na desni lahko tudi izbirate krivulje ali pa jih pobarvate, če kliknite na obarvan gumb.
+                <a href="#" id="hide">Skrij ta tekst.</a>
+            </span>
+        </div>-->
+        <button id="new">
+            +
+        </button>
+        <button id="delete">
+            -
+        </button>
+        <input id="colorpicker" type="color" value="#000000">
+
+        </input>
+    </div>
+    <div id="selection">
+        <select id="splines"></select>
+    </div>
+    <script src="bezier.js"></script>
+    <script>
+        // Tukaj je malo čudna koda, nisem imel časa pospraviti
+        const canvas = document.getElementById('board');
+        Spline.current = new Spline();
+        Spline.splines.add(Spline.current);
+
+        window.onload = () => {
+            canvas.onmousedown = (e) => {
+                const clickedCurrent = Spline.getClickedSpline(e.clientX, e.clientY);
+                if (clickedCurrent) {
+                    if (!Spline.current.fullyDrawn) {
+                        Spline.splines.delete(Spline.current);
+                    }
+                    Spline.current = clickedCurrent;
+                    document.getElementById("splines").value = Spline.current.friendlyId;
+                    document.getElementById("colorpicker").value = clickedCurrent.color;
+                    Spline.refreshAll();
+                }
+                if (!Spline.current) {
+                    Spline.current = new Spline();
+                    document.getElementById("splines").value = Spline.current.friendlyId;
+                    Spline.splines.add(Spline.current);
+                    Spline.current.color = document.getElementById("colorpicker").value;
+                }
+                if (!clickedCurrent) {
+                    Preview.mouseDown(e.clientX, e.clientY, Spline.current);
+                }
+                Spline.current.mouseDown(e.clientX, e.clientY);
+            }
+
+            canvas.onmouseup = (e) => {
+                Preview.mouseUp(Spline.current.fullyDrawn);
+                Spline.current.mouseUp(e.clientX, e.clientY);
+            }
+
+            canvas.onmousemove = (e) => {
+                Preview.mouseMove(e.clientX, e.clientY);
+                if (!Spline.current) {
+                    return;
+                }
+                Spline.current.mouseMove(e.clientX, e.clientY);
+            }
+
+            ctx = canvas.getContext('2d');
+            onResize();
+        }
+
+        window.onresize = () => onResize();
+
+        document.getElementById("colorpicker").onchange = () => {
+            Spline.current.colorize(document.getElementById("colorpicker").value);
+        }
+
+        document.getElementById("new").onclick = () => {
+            document.getElementById("splines").value = "";
+            Spline.current = false;
+            Spline.refreshAll();
+        }
+
+        document.getElementById("delete").onclick = () => {
+            const options = document.getElementById("splines").options;
+            for (let i = 0; i < options.length; ++i) {
+                if (parseInt(options[i].value) === Spline.current.friendlyId) {
+                    options.remove(i);
+                    break;
+                }
+            }
+            document.getElementById("splines").value = "";
+            Spline.splines.delete(Spline.current);
+            Spline.current = false;
+            Spline.refreshAll();
+        }
+
+        document.getElementById("splines").onchange = (e) => {
+            const spline = Spline.findByFriendlyId(parseInt(document.getElementById("splines").value));
+            if (spline) {
+                document.getElementById("colorpicker").value = spline.color;
+                Spline.current = spline;
+                Spline.refreshAll();
+            }
+        }
+
+        // document.getElementById("hide").onclick = (e) => document.getElementById("text").remove();
+
+        function onResize() {
+            const canvas = document.getElementById('board');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            Spline.refreshAll();
+        }
+    </script>
+</body>
+</html>
